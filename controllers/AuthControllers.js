@@ -6,19 +6,22 @@ const login = async (req, res) => {
     try {
         const results = validationResult(req)
         const { email, password } = req.body;
-        const user = await User.findOne({ email });
+        const getUser = await User.findOne({ email });
         if (!results.isEmpty()) {
             return res.status(422).send({ success: false, errors: formatError(results) })
         }
-        if (!user) {
+        if (!getUser) {
             return res.status(422).send({ success: false, message: "user not found" })
         }
         const signedJwt = jwt.sign({
             data: {
-                id: user._id,
-                email: user.email
+                _id: getUser._id,
+                email: getUser.email
             },
         }, "SECRET_KEY", { expiresIn: '3 days' })
+        const user = {
+            ...getUser.toObject()
+        }
         user.token = signedJwt
 
         return res.send({ message: "Succeed", user })
@@ -37,16 +40,17 @@ const register = async (req, res) => {
         if (findUser) {
             return res.status(400).send({ message: 'User already exists' })
         }
-        const user = await User.create({
+        const createdUser = await User.create({
             email, name, password
         })
+        const user = createdUser.toObject()
         user.token = jwt.sign({
             data: {
-                id: user._id,
-                email: user.email
+                _id: createdUser._id,
+                email: createdUser.email
             },
         }, "SECRET_KEY", { expiresIn: '3 days' })
-        return res.send({ message: 'User created',user})
+        return res.send({ message: 'User created', user })
     } catch (error) {
         console.log(error);
         return res.status(400).send({ error })
@@ -54,4 +58,4 @@ const register = async (req, res) => {
 }
 
 
-module.exports = { login,register }
+module.exports = { login, register }
