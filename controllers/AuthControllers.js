@@ -2,9 +2,6 @@ const { validationResult } = require("express-validator")
 const { formatError } = require("../utils")
 const jwt = require('jsonwebtoken');
 const User = require("../models/User");
-
-
-
 const login = async (req, res) => {
     try {
         const results = validationResult(req)
