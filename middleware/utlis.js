@@ -5,7 +5,7 @@ const checkToken = (req, res, next) => {
     if (token) {
         jwt.verify(token, "SECRET_KEY", (err, decoded) => {
             if (err) {
-                return res.status(400).json({ message: 'Auth token is not valid' });
+                return res.status(400).json({ message: 'Auth token is not valid',success:false });
             } else {
                 req.decoded = decoded.data
                 return next()

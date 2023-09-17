@@ -26,7 +26,8 @@ const login = async (req, res) => {
         const oneDay = 24 * 60 * 60 * 1000
 
         return res.cookie("video_chat_token", signedJwt, {
-            maxAge: oneDay * 3
+            maxAge: oneDay * 3,
+            httpOnly: true
         }).send({ message: "Succeed", user })
 
     } catch (error) {
@@ -55,13 +56,19 @@ const register = async (req, res) => {
         }, "SECRET_KEY", { expiresIn: '3 days' })
         const oneDay = 24 * 60 * 60 * 1000
         return res.cookie("video_chat_token", user.token, {
-            maxAge: oneDay * 3
+            maxAge: oneDay * 3,
+            httpOnly: true
         }).send({ message: 'User created', user })
     } catch (error) {
         console.log(error);
         return res.status(400).send({ error })
     }
 }
+const logOut = (req, res) => {
+    return res.cookie("video_chat_token", "", {
+        maxAge: 0,
+        httpOnly: true
+    }).send({ message: "logout successfully" })
+}
 
-
-module.exports = { login, register }
+module.exports = { login, register, logOut }
