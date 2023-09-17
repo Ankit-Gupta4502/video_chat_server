@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken")
 const checkToken = (req, res, next) => {
-    const token = req.cookies.video_chat_token
+    const getToken = req.headers["x-access-token"] || req.headers["authorization"] || `Bearer ${req.cookies.video_chat_token}`
+    const token = getToken?.slice(7, getToken?.length)
     if (token) {
         jwt.verify(token, "SECRET_KEY", (err, decoded) => {
             if (err) {
