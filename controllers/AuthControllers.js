@@ -23,8 +23,11 @@ const login = async (req, res) => {
             ...getUser.toObject()
         }
         user.token = signedJwt
+        const oneDay = 24 * 60 * 60 * 1000
 
-        return res.send({ message: "Succeed", user })
+        return res.cookie("video_chat_token", signedJwt, {
+            maxAge: oneDay * 3
+        }).send({ message: "Succeed", user })
 
     } catch (error) {
         console.log(error);
@@ -50,7 +53,10 @@ const register = async (req, res) => {
                 email: createdUser.email
             },
         }, "SECRET_KEY", { expiresIn: '3 days' })
-        return res.send({ message: 'User created', user })
+        const oneDay = 24 * 60 * 60 * 1000
+        return res.cookie("video_chat_token", user.token, {
+            maxAge: oneDay * 3
+        }).send({ message: 'User created', user })
     } catch (error) {
         console.log(error);
         return res.status(400).send({ error })
